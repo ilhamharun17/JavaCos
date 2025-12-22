@@ -2,7 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
+import '../data/favorite_data.dart';
+import '../data/cart_data.dart';
+import 'main_navigation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,6 +21,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _next() async {
+    await CartData.load();
+    await FavoriteData.loadFavorites();
     await Future.delayed(const Duration(seconds: 2));
     final loggedIn = await AuthService.isLoggedIn();
 
@@ -27,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => loggedIn ? const HomeScreen() : const LoginScreen(),
+        builder: (_) => loggedIn ? const MainNavigation() : const LoginScreen(),
       ),
     );
   }

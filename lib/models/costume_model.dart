@@ -15,11 +15,21 @@ class Costume {
 
   factory Costume.fromJson(Map<String, dynamic> json) {
     return Costume(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      price: json['price'],
-      image: json['image'],
+      id: json['id'] as int,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      price: json['price'] as int,
+      image: json['image'] as String,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'price': price,
+      'image': image,
+    };
   }
 }

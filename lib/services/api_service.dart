@@ -3,19 +3,19 @@ import 'package:http/http.dart' as http;
 import '../models/costume_model.dart';
 
 class ApiService {
+  static const String _url =
+      'https://raw.githubusercontent.com/ilhamharun17/kostum-adat/main/costumes.json';
+
   static Future<List<Costume>> fetchCostumes() async {
-    const String url =
-        'https://raw.githubusercontent.com/ilhamharun17/kostum-adat/refs/heads/main/costumes.json';
+    final response = await http.get(Uri.parse(_url));
 
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode != 200) {
-      throw Exception('Gagal memuat data kostum');
+    if (response.statusCode == 200) {
+      final List<Map<String, dynamic>> data =
+          (json.decode(response.body)['costumes'] as List)
+              .cast<Map<String, dynamic>>();
+      return data.map((e) => Costume.fromJson(e)).toList();
+    } else {
+      throw Exception('HTTP ${response.statusCode}: Gagal memuat data');
     }
-
-    final data = json.decode(response.body);
-    final List list = data['costumes'];
-
-    return list.map((e) => Costume.fromJson(e)).toList();
   }
 }
