@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../data/cart_data.dart';
 import '../data/address_data.dart';
 import 'address_screen.dart';
+import 'order_confirmed_screen.dart';
+import '../services/notification_service.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -244,21 +246,31 @@ class _CartScreenState extends State<CartScreen> {
   // ================= CHECKOUT =================
 
   Widget _checkoutButton(double total) {
-    return Container(
-      height: 60,
-      width: double.infinity,
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Center(
-        child: Text(
-          'Checkout (Rp ${total.toInt()})',
-          style: const TextStyle(
-            color: Color(0xFFD4AF37),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () async {
+        await NotificationService.showOrderSuccess();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const OrderConfirmedScreen()),
+        );
+      },
+      child: Container(
+        height: 60,
+        width: double.infinity,
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Center(
+          child: Text(
+            'Checkout (Rp ${total.toInt()})',
+            style: const TextStyle(
+              color: Color(0xFFD4AF37),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),

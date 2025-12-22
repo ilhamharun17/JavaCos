@@ -5,6 +5,7 @@ import 'login_screen.dart';
 import '../data/favorite_data.dart';
 import '../data/cart_data.dart';
 import 'main_navigation.dart';
+import '../services/notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,6 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _next() async {
+    await NotificationService.init();
     await CartData.load();
     await FavoriteData.loadFavorites();
     await Future.delayed(const Duration(seconds: 2));

@@ -5,7 +5,6 @@ import '../../data/favorite_data.dart';
 
 class CostumeCard extends StatefulWidget {
   final Costume costume;
-
   const CostumeCard({super.key, required this.costume});
 
   @override
@@ -29,31 +28,32 @@ class _CostumeCardState extends State<CostumeCard> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== IMAGE + FAVORITE =====
+            // ===== IMAGE (FIX OVERFLOW)
             Expanded(
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(20),
+                      top: Radius.circular(18),
                     ),
                     child: Image.network(
                       widget.costume.image,
-                      fit: BoxFit.contain,
                       width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover, // 🔥 penting
                     ),
                   ),
 
-                  // ❤️ FAVORITE BUTTON
+                  // ❤️ FAVORITE
                   Positioned(
-                    top: 10,
-                    right: 10,
+                    top: 8,
+                    right: 8,
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -75,9 +75,9 @@ class _CostumeCardState extends State<CostumeCard> {
               ),
             ),
 
-            // ===== INFO =====
+            // ===== INFO
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -85,11 +85,15 @@ class _CostumeCardState extends State<CostumeCard> {
                     widget.costume.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Rp ${widget.costume.price.toInt()}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
