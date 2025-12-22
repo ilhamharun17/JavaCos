@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "371034901502",
+    "project_id": "rentadat",
+    "storage_bucket": "rentadat.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371034901502:android:f4d95d9e2f0741fd630eaf",
+        "android_client_info": {
+          "package_name": "com.example.rental"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYuwlyDmXt4_cIzpPE0xJ8UMSnNsTLyHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
