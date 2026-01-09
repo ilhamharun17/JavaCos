@@ -71,6 +71,7 @@ class OrderConfirmedScreen extends StatelessWidget {
 
                   GestureDetector(
                     onTap: () {
+                      MainNavigation.globalKey.currentState?.setIndex(0);
                       Navigator.popUntil(context, (r) => r.isFirst);
                     },
                     child: Container(

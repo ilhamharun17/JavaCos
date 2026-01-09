@@ -9,6 +9,9 @@ import 'profile_screen.dart';
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
+  static final GlobalKey<_MainNavigationState> globalKey =
+      GlobalKey<_MainNavigationState>();
+
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
@@ -41,6 +44,10 @@ class _MainNavigationState extends State<MainNavigation> {
     if (status.isPermanentlyDenied) {
       await openAppSettings();
     }
+  }
+
+  void setIndex(int index) {
+    setState(() => _currentIndex = index);
   }
 
   @override

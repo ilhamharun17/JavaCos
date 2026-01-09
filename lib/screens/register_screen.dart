@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'home_screen.dart';
+import 'main_navigation.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,8 +10,37 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  bool rememberMe = true;
-  bool obscure = true;
+  final usernameCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+
+  bool loading = false;
+
+  Future<void> _register() async {
+    setState(() => loading = true);
+
+    final error = await AuthService.register(
+      email: emailCtrl.text.trim(),
+      password: passwordCtrl.text.trim(),
+      username: usernameCtrl.text.trim(),
+    );
+
+    setState(() => loading = false);
+
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const MainNavigation()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,69 +48,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Back button
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
+            const SizedBox(height: 40),
             const Text(
               'Sign Up',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 40),
 
-            _field('Username'),
-            _field(
-              'Password',
-              obscure: obscure,
-              suffix: const Text(
-                'Strong',
-                style: TextStyle(color: Colors.green),
-              ),
-              toggle: () => setState(() => obscure = !obscure),
-            ),
-            _field(
-              'Email Address',
-              suffix: const Icon(Icons.check, color: Colors.green),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Remember me'),
-                  Switch(
-                    value: rememberMe,
-                    onChanged: (v) => setState(() => rememberMe = v),
-                    activeThumbColor: Colors.green,
-                  ),
-                ],
-              ),
-            ),
+            _field('Username', usernameCtrl),
+            _field('Email', emailCtrl),
+            _field('Password', passwordCtrl, obscure: true),
 
             const Spacer(),
 
-            _bottomButton(
-              text: 'Sign Up',
-              onTap: () async {
-                await AuthService.login(rememberMe);
-
-                if (!context.mounted) return;
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                );
-              },
-            ),
+            _button('Sign Up', _register),
           ],
         ),
       ),
@@ -89,46 +69,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _field(
-    String label, {
+    String label,
+    TextEditingController ctrl, {
     bool obscure = false,
-    Widget? suffix,
-    VoidCallback? toggle,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
-          TextField(
-            obscureText: obscure,
-            decoration: InputDecoration(
-              border: const UnderlineInputBorder(),
-              suffixIcon: toggle != null
-                  ? IconButton(
-                      icon: const Icon(Icons.visibility),
-                      onPressed: toggle,
-                    )
-                  : suffix,
-            ),
-          ),
-        ],
+      child: TextField(
+        controller: ctrl,
+        obscureText: obscure,
+        decoration: InputDecoration(labelText: label),
       ),
     );
   }
 
-  Widget _bottomButton({required String text, required VoidCallback onTap}) {
+  Widget _button(String text, VoidCallback onTap) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: loading ? null : onTap,
       child: Container(
         height: 64,
         width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [Colors.black, Color(0xFF1A1A1A)]),
-        ),
+        color: Colors.black,
         child: Center(
           child: Text(
-            text,
+            loading ? 'Loading...' : text,
             style: const TextStyle(
               color: Color(0xFFD4AF37),
               fontSize: 18,

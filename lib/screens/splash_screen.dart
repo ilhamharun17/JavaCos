@@ -22,10 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _next() async {
-    await NotificationService.init();
+    // 🚀 Jangan blocking splash
+    NotificationService.init();
+
     await CartData.load();
     await FavoriteData.loadFavorites();
+
     await Future.delayed(const Duration(seconds: 2));
+
     final loggedIn = await AuthService.isLoggedIn();
 
     if (!mounted) return;
@@ -33,7 +37,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => loggedIn ? const MainNavigation() : const LoginScreen(),
+        builder: (_) => loggedIn
+            ? MainNavigation(key: MainNavigation.globalKey)
+            : const LoginScreen(),
       ),
     );
   }
@@ -61,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
           ),
-
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -85,11 +90,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 8),
                 Container(width: 180, height: 2, color: Colors.white),
                 const SizedBox(height: 12),
-
                 RichText(
                   text: const TextSpan(
                     style: TextStyle(fontSize: 14, letterSpacing: 1.2),

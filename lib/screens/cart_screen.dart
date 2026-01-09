@@ -50,7 +50,7 @@ class _CartScreenState extends State<CartScreen> {
                   const SizedBox(height: 12),
 
                   // ===== CART ITEMS =====
-                  ...items.map((item) => _cartItem(item)).toList(),
+                  ...items.map((item) => _cartItem(item)),
 
                   const SizedBox(height: 24),
 
@@ -248,7 +248,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget _checkoutButton(double total) {
     return GestureDetector(
       onTap: () async {
-        await NotificationService.showOrderSuccess();
+        await NotificationService.showNotification(
+          'Order Placed!',
+          'Your order has been successfully placed.',
+        );
 
         Navigator.push(
           context,

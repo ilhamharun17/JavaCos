@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'home_screen.dart';
+import 'main_navigation.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,7 +11,39 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool rememberMe = true;
+  final emailCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+
+  bool loading = false;
+  bool rememberMe = true; // ✅ DEFAULT ON
+
+  Future<void> _login() async {
+    setState(() => loading = true);
+
+    final error = await AuthService.login(
+      email: emailCtrl.text.trim(),
+      password: passwordCtrl.text.trim(),
+      rememberMe: rememberMe,
+    );
+
+    setState(() => loading = false);
+
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MainNavigation(key: MainNavigation.globalKey),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,26 +52,22 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             const SizedBox(height: 60),
+
             const Text(
               'Welcome',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Please enter your data to continue',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 40),
 
-            _field('Username'),
-            _field('Password', obscure: true),
+            _field('Email', emailCtrl),
+            _field('Password', passwordCtrl, obscure: true),
 
+            // ✅ REMEMBER ME
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Remember me'),
+                  const Text('Tetap login'),
                   Switch(
                     value: rememberMe,
                     onChanged: (v) => setState(() => rememberMe = v),
@@ -55,61 +83,50 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (_) => const RegisterScreen()),
                 );
               },
-              child: const Text(
-                "Don't have an account? Sign Up",
-                style: TextStyle(color: Color(0xFFD4AF37)),
-              ),
+              child: const Text("Don't have account? Sign Up"),
             ),
 
             const Spacer(),
 
-            GestureDetector(
-              onTap: () async {
-                await AuthService.login(rememberMe);
-                if (!context.mounted) return;
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                );
-              },
-              child: Container(
-                height: 64,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.black, Color(0xFF1A1A1A)],
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Color(0xFFD4AF37),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _button('Login', _login),
           ],
         ),
       ),
     );
   }
 
-  Widget _field(String label, {bool obscure = false}) {
+  Widget _field(
+    String label,
+    TextEditingController ctrl, {
+    bool obscure = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
-          TextField(
-            obscureText: obscure,
-            decoration: const InputDecoration(border: UnderlineInputBorder()),
+      child: TextField(
+        controller: ctrl,
+        obscureText: obscure,
+        decoration: InputDecoration(labelText: label),
+      ),
+    );
+  }
+
+  Widget _button(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: loading ? null : onTap,
+      child: Container(
+        height: 64,
+        width: double.infinity,
+        color: Colors.black,
+        child: Center(
+          child: Text(
+            loading ? 'Loading...' : text,
+            style: const TextStyle(
+              color: Color(0xFFD4AF37),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
